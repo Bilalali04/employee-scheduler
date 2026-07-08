@@ -24,7 +24,7 @@ export and the full ADP-style data schema are deferred to a later version.
 - Python
 - MongoDB (via pymongo)
 - Streamlit (v1 frontend)
-- Synthetic seed data generated via LLM (anthropic SDK), not hand-written
+- Synthetic seed data generated with Faker and random, not hand-written
   fixtures
 
 ## Project structure
@@ -34,7 +34,7 @@ employee-scheduler/
 ├── .env                        # local only, not checked in
 ├── config/settings.py          # domain constants
 ├── db/connection.py             # MongoDB connection (reads .env)
-├── db/seed_data.py              # LLM-generated synthetic data
+├── db/seed_data.py              # synthetic data (Faker + random)
 ├── models/employee.py
 ├── models/store.py
 ├── scheduler/peak_hours.py
