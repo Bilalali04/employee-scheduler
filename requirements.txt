@@ -1,5 +1,4 @@
 pymongo
-streamlit
 python-dotenv
 faker
 ortools

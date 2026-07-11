@@ -1,10 +1,10 @@
 """FastAPI backend layer for the employee scheduler.
 
 Exposes the existing Excel import and CP-SAT scheduling logic over HTTP so
-a React frontend can call it directly, in addition to (not instead of) the
-existing Streamlit app. MongoDB remains the backend's internal working
-store; Excel uploads are now processed on demand via POST /upload, rather
-than only being read from the fixed data/preset_data.xlsx preset file.
+the React frontend (frontend/) can call it directly. MongoDB remains the
+backend's internal working store; Excel uploads are now processed on
+demand via POST /upload, rather than only being read from the fixed
+data/preset_data.xlsx preset file.
 """
 
 import io

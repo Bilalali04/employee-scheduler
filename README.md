@@ -1,8 +1,9 @@
 # Employee Scheduler
 
-A backend-first employee scheduling system. v1 is scoped to the backend plus a
-simplified Streamlit frontend that proves the backend works end to end. Excel
-export and the full ADP-style data schema are deferred to a later version.
+A backend-first employee scheduling system. The backend is a FastAPI service
+(`api/main.py`) with a React frontend (`frontend/`) that calls it directly.
+Excel export (generating downloadable deliverables) and the full ADP-style
+data schema are deferred to a later version.
 
 ## Domain rules (v1)
 
@@ -21,10 +22,12 @@ export and the full ADP-style data schema are deferred to a later version.
 
 ## Tech stack
 
-- Python
+- Python (backend), JavaScript/React (frontend)
+- FastAPI (`api/main.py`), served via uvicorn
+- React + Vite + Tailwind CSS (`frontend/`) - the primary UI
 - MongoDB (via pymongo)
-- Streamlit (v1 frontend)
 - Google OR-Tools CP-SAT solver (schedule generation)
+- Excel (via pandas/openpyxl) - preset seed data or a user-uploaded workbook
 - Synthetic seed data generated with Faker and random, not hand-written
   fixtures
 
@@ -35,9 +38,12 @@ employee-scheduler/
 ├── .env                          # local only, not checked in
 ├── config/settings.py            # domain constants (brands, MFC minimums,
 │                                  # shift ranges, weekly budgets, store hours)
+├── data/preset_data.xlsx          # source-of-truth preset seed data
+├── data/generate_preset_data.py   # one-time generator that produced it
 ├── db/connection.py               # MongoDB connection (reads .env)
-├── db/seed_data.py                # generates and inserts synthetic stores,
-│                                  # employees, and hourly sales (Faker + random)
+├── db/excel_import.py             # reads a workbook into store/employee docs
+├── db/seed_data.py                # seeds MongoDB from Excel (default) or
+│                                  # from freshly-generated random data (demo)
 ├── models/employee.py             # employee document schema + validation
 ├── models/store.py                # store document schema + validation
 ├── scheduler/peak_hours.py        # detects a store's peak hour window from
@@ -46,7 +52,8 @@ employee-scheduler/
 │                                  # employees, weekly budget range
 ├── scheduler/generate_schedule.py # CP-SAT schedule generation (daily,
 │                                  # weekly, all-store)
-├── app.py                         # Streamlit frontend
+├── api/main.py                    # FastAPI app: upload, stores, schedule
+├── frontend/                      # React + Vite + Tailwind UI
 └── tests/test_scheduler.py        # placeholder, not yet implemented
 ```
 
@@ -72,13 +79,21 @@ employee-scheduler/
    ```
    This also pings MongoDB first to confirm the connection works, then
    (re)populates the `stores` and `employees` collections.
-5. Run the frontend:
+5. Run the FastAPI backend:
    ```
-   streamlit run app.py
+   uvicorn api.main:app --port 8000
    ```
-   Pick a store from the dropdown to generate and view its weekly schedule,
-   along with debug info (detected peak window, required staffing per hour,
-   weekly budget usage, and solver status).
+6. In a separate terminal, install and run the React frontend:
+   ```
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   Open the printed local URL (e.g. `http://localhost:5173`). Upload an Excel
+   workbook (or rely on data already seeded via `db.seed_data`), pick a store
+   from the dropdown, and view its weekly schedule as a day x employee grid,
+   with a collapsible debug panel (detected peak window, required staffing
+   per hour, weekly budget usage, and solver status).
 
 ## Scheduling approach
 
@@ -105,10 +120,11 @@ for one store/one week, and `generate_full_schedule` for every seeded store.
 
 ## Status
 
-Backend is functional end-to-end: domain models, synthetic data seeding
-(stores, employees, hourly sales), peak-hour detection, staffing rules, and
+Backend is functional end-to-end: domain models, Excel-based seed data (with
+a random-generation demo mode), peak-hour detection, staffing rules, and
 CP-SAT-based schedule generation (daily, weekly, and across all stores) are
-all implemented, plus a Streamlit frontend to exercise it. Not yet
+all implemented, exposed over a FastAPI backend and consumed by a React
+frontend (upload a roster, pick a store, view its weekly schedule). Not yet
 implemented: an optimization objective for schedule generation (currently
 feasibility only), automated tests, lunch hour scheduling, Excel export, and
 the full ADP-style employee schema (the last three are explicitly deferred
