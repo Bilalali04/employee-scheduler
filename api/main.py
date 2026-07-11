@@ -102,9 +102,19 @@ def get_schedule(store_id: str):
     employees = list(db.employees.find({}, {"_id": 0}))
     eligible_employees = get_eligible_employees(employees, store["branch"])
 
-    result = generate_weekly_schedule(store, eligible_employees)
+    try:
+        result = generate_weekly_schedule(store, eligible_employees)
+        peak_window = detect_peak_window(store["hourly_sales"])
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                f"Store {store_id!r} has no hourly sales data - check that "
+                "Store_Code matches between the Stores and Hourly_Sales "
+                "sheets in your upload."
+            ),
+        ) from exc
 
-    peak_window = detect_peak_window(store["hourly_sales"])
     budget_min, budget_max = get_weekly_budget_range(store)
 
     response = {
