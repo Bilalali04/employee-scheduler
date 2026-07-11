@@ -26,14 +26,19 @@ def _load_hourly_sales_by_store(hourly_sales_df):
 def import_stores_and_employees(excel_path=DEFAULT_EXCEL_PATH):
     """Read the preset Excel workbook and return validated (stores, employees).
 
+    excel_path can be a file path or a file-like object (e.g. a BytesIO
+    buffer from an uploaded file) - both are read once via pd.ExcelFile so
+    the same source works no matter how many sheets are parsed from it.
+
     Returns:
         (stores, employees) - lists of documents built via build_store() /
         build_employee(), the same document shape db/seed_data.py produces
         (stores carry an "hourly_sales" field for peak-hour detection).
     """
-    stores_df = pd.read_excel(excel_path, sheet_name="Stores")
-    employees_df = pd.read_excel(excel_path, sheet_name="Employees")
-    hourly_sales_df = pd.read_excel(excel_path, sheet_name="Hourly_Sales")
+    with pd.ExcelFile(excel_path) as excel_file:
+        stores_df = pd.read_excel(excel_file, sheet_name="Stores")
+        employees_df = pd.read_excel(excel_file, sheet_name="Employees")
+        hourly_sales_df = pd.read_excel(excel_file, sheet_name="Hourly_Sales")
 
     hourly_sales_by_store = _load_hourly_sales_by_store(hourly_sales_df)
 
