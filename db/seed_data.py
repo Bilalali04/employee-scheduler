@@ -1,9 +1,14 @@
-"""Synthetic data seeding.
+"""Data seeding into MongoDB.
 
-Generates realistic store and employee data with Faker and random, then
-inserts it into MongoDB. Domain rules (brand/branch pairing, size tiers,
-FT/PT shift ranges) are enforced through the models/ validation helpers
-rather than hand-written fixtures.
+Default path (seed_from_excel): reads the preset dataset from
+data/preset_data.xlsx via db/excel_import.py and inserts it into MongoDB.
+Excel is the source of truth for seed data - see CLAUDE.md's "Data
+architecture" section.
+
+Demo-mode path (seed_from_random_data): the original Faker/random live
+generation. Kept available for demos or testing, but no longer the default
+- it's also the logic data/generate_preset_data.py reused to produce
+data/preset_data.xlsx one time.
 """
 
 import random
@@ -19,6 +24,7 @@ from config.settings import (
     STORE_OPEN_HOUR,
 )
 from db.connection import get_client, get_db
+from db.excel_import import import_stores_and_employees
 from models.employee import EMPLOYMENT_TYPES, build_employee, validate_shift_length
 from models.store import build_store
 
@@ -132,12 +138,8 @@ def test_connection():
     return get_client().admin.command("ping")
 
 
-def seed():
-    """Generate synthetic stores and employees and insert them into MongoDB."""
-    branch_size_tiers = generate_branch_size_tiers()
-    stores = generate_stores(branch_size_tiers)
-    employees = generate_employees(branch_size_tiers)
-
+def _insert_into_mongo(stores, employees):
+    """Clear the stores/employees collections and insert the given documents."""
     db = get_db()
     db.stores.delete_many({})
     db.employees.delete_many({})
@@ -148,6 +150,23 @@ def seed():
     return stores, employees
 
 
+def seed_from_excel():
+    """Seed MongoDB from data/preset_data.xlsx (default path)."""
+    stores, employees = import_stores_and_employees()
+    return _insert_into_mongo(stores, employees)
+
+
+def seed_from_random_data():
+    """Seed MongoDB with freshly-generated random data (demo mode).
+
+    Not the default path - seed_from_excel() is. Kept for demos/testing.
+    """
+    branch_size_tiers = generate_branch_size_tiers()
+    stores = generate_stores(branch_size_tiers)
+    employees = generate_employees(branch_size_tiers)
+    return _insert_into_mongo(stores, employees)
+
+
 if __name__ == "__main__":
     print("Ping result:", test_connection())
-    seed()
+    seed_from_excel()

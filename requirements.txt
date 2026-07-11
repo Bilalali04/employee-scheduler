@@ -3,4 +3,6 @@ streamlit
 python-dotenv
 faker
 ortools
+pandas
+openpyxl
 pytest
