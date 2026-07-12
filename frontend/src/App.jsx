@@ -3,6 +3,8 @@ import { fetchStores } from './api'
 import UploadPanel from './components/UploadPanel'
 import StoreSelector from './components/StoreSelector'
 import ScheduleView from './components/ScheduleView'
+import MetricsRow from './components/MetricsRow'
+import Sidebar from './components/Sidebar'
 
 function App() {
   const [stores, setStores] = useState([])
@@ -34,40 +36,69 @@ function App() {
   }, [loadStores])
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      <div className="mx-auto max-w-5xl px-6 py-12">
-        <header className="mb-10">
-          <p className="text-sm font-medium uppercase tracking-wide text-indigo-600">
-            Employee Scheduler
-          </p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
-            Weekly schedule builder
-          </h1>
-          <p className="mt-2 max-w-2xl text-slate-500">
-            Upload a roster, pick a store, and generate a feasible weekly schedule with the
-            CP-SAT scheduling engine.
-          </p>
-        </header>
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      {/* Toolbar */}
+      <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex h-16 items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/15 ring-1 ring-inset ring-indigo-500/30">
+                <svg
+                  className="h-5 w-5 text-indigo-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold leading-none text-slate-100">
+                  Employee Scheduler
+                </p>
+                <p className="mt-1 text-xs text-slate-500">CP-SAT weekly schedule builder</p>
+              </div>
+            </div>
 
-        <div className="space-y-6">
-          <UploadPanel onUploadSuccess={loadStores} />
+            <StoreSelector
+              stores={stores}
+              loading={storesLoading}
+              error={storesError}
+              selectedStoreId={selectedStoreId}
+              onSelect={setSelectedStoreId}
+            />
+          </div>
 
-          <StoreSelector
-            stores={stores}
-            loading={storesLoading}
-            error={storesError}
-            selectedStoreId={selectedStoreId}
-            onSelect={setSelectedStoreId}
-          />
-
-          {selectedStoreId && <ScheduleView key={selectedStoreId} storeId={selectedStoreId} />}
+          <div className="flex items-center border-t border-slate-800/60 py-3">
+            <UploadPanel onUploadSuccess={loadStores} />
+          </div>
         </div>
+      </header>
 
-        <footer className="mt-10 text-center text-xs text-slate-400">
-          FastAPI backend at{' '}
-          <span className="font-mono">http://localhost:8000</span>
-        </footer>
-      </div>
+      <main className="mx-auto max-w-7xl px-6 py-6">
+        {/* Metrics / summary row (placeholder - filled in a later stage) */}
+        <MetricsRow />
+
+        {/* Main content: sidebar + main panel */}
+        <div className="mt-6 flex flex-col gap-6 lg:flex-row">
+          <Sidebar />
+
+          <div className="min-w-0 flex-1">
+            {selectedStoreId ? (
+              <ScheduleView key={selectedStoreId} storeId={selectedStoreId} />
+            ) : (
+              <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-10 text-center text-sm text-slate-500">
+                Select a store to view its weekly schedule.
+              </section>
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   )
 }
