@@ -1,35 +1,7 @@
-import { useEffect, useState } from 'react'
-import { fetchSchedule } from '../api'
 import ScheduleGrid from './ScheduleGrid'
 import DebugPanel from './DebugPanel'
 
-function ScheduleView({ storeId }) {
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [schedule, setSchedule] = useState(null)
-
-  useEffect(() => {
-    let cancelled = false
-    setLoading(true)
-    setError(null)
-    setSchedule(null)
-
-    fetchSchedule(storeId)
-      .then((data) => {
-        if (!cancelled) setSchedule(data)
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err.message)
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [storeId])
-
+function ScheduleView({ schedule, loading, error }) {
   return (
     <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
       <h2 className="text-lg font-semibold text-slate-100">Weekly schedule</h2>

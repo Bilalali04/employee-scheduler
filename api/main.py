@@ -120,6 +120,7 @@ def get_schedule(store_id: str):
     response = {
         "store_id": store_id,
         "status": result["status"],
+        "eligible_employee_count": len(eligible_employees),
         "peak_window": {
             "start_hour": peak_window["start_hour"],
             "end_hour": peak_window["end_hour"],

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { fetchStores } from './api'
+import { fetchSchedule, fetchStores } from './api'
 import UploadPanel from './components/UploadPanel'
 import StoreSelector from './components/StoreSelector'
 import ScheduleView from './components/ScheduleView'
@@ -11,6 +11,10 @@ function App() {
   const [storesLoading, setStoresLoading] = useState(true)
   const [storesError, setStoresError] = useState(null)
   const [selectedStoreId, setSelectedStoreId] = useState(null)
+
+  const [schedule, setSchedule] = useState(null)
+  const [scheduleLoading, setScheduleLoading] = useState(false)
+  const [scheduleError, setScheduleError] = useState(null)
 
   const loadStores = useCallback(async () => {
     setStoresLoading(true)
@@ -34,6 +38,35 @@ function App() {
   useEffect(() => {
     loadStores()
   }, [loadStores])
+
+  useEffect(() => {
+    if (!selectedStoreId) {
+      setSchedule(null)
+      setScheduleError(null)
+      setScheduleLoading(false)
+      return undefined
+    }
+
+    let cancelled = false
+    setScheduleLoading(true)
+    setScheduleError(null)
+    setSchedule(null)
+
+    fetchSchedule(selectedStoreId)
+      .then((data) => {
+        if (!cancelled) setSchedule(data)
+      })
+      .catch((err) => {
+        if (!cancelled) setScheduleError(err.message)
+      })
+      .finally(() => {
+        if (!cancelled) setScheduleLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedStoreId])
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
@@ -81,8 +114,8 @@ function App() {
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-6">
-        {/* Metrics / summary row (placeholder - filled in a later stage) */}
-        <MetricsRow />
+        {/* Metrics / summary row */}
+        <MetricsRow schedule={schedule} loading={scheduleLoading} />
 
         {/* Main content: sidebar + main panel */}
         <div className="mt-6 flex flex-col gap-6 lg:flex-row">
@@ -90,7 +123,7 @@ function App() {
 
           <div className="min-w-0 flex-1">
             {selectedStoreId ? (
-              <ScheduleView key={selectedStoreId} storeId={selectedStoreId} />
+              <ScheduleView schedule={schedule} loading={scheduleLoading} error={scheduleError} />
             ) : (
               <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-10 text-center text-sm text-slate-500">
                 Select a store to view its weekly schedule.
