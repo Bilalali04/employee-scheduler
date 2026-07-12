@@ -7,7 +7,7 @@ const REAL_METRICS = [
     key: 'employees',
     label: 'Employees',
     value: (schedule) =>
-      schedule ? String(schedule.eligible_employee_count) : null,
+      schedule ? String(schedule.eligible_employees.length) : null,
   },
   {
     key: 'scheduled_hrs',

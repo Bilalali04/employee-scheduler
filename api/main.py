@@ -46,6 +46,30 @@ def _hour_label(hour):
     return f"{hour}am"
 
 
+def _build_eligible_employees_payload(eligible_employees, result):
+    """Return the eligible roster with each employee's actual hours this week."""
+    scheduled_hours_by_employee = {}
+    if result["status"] == "FEASIBLE":
+        for day_assignments in result["schedule"].values():
+            for employee_id, info in day_assignments.items():
+                scheduled_hours_by_employee[employee_id] = scheduled_hours_by_employee.get(
+                    employee_id, 0
+                ) + len(info["hours"])
+
+    payload = []
+    for employee in eligible_employees:
+        payload.append(
+            {
+                "employee_id": employee["employee_id"],
+                "name": employee["name"],
+                "employment_type": employee["employment_type"],
+                "scheduled_hours": scheduled_hours_by_employee.get(employee["employee_id"], 0),
+            }
+        )
+    payload.sort(key=lambda employee: employee["name"])
+    return payload
+
+
 def _insert_into_mongo(stores, employees):
     db = get_db()
     db.stores.delete_many({})
@@ -120,7 +144,7 @@ def get_schedule(store_id: str):
     response = {
         "store_id": store_id,
         "status": result["status"],
-        "eligible_employee_count": len(eligible_employees),
+        "eligible_employees": _build_eligible_employees_payload(eligible_employees, result),
         "peak_window": {
             "start_hour": peak_window["start_hour"],
             "end_hour": peak_window["end_hour"],

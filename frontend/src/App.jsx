@@ -119,7 +119,7 @@ function App() {
 
         {/* Main content: sidebar + main panel */}
         <div className="mt-6 flex flex-col gap-6 lg:flex-row">
-          <Sidebar />
+          <Sidebar employees={schedule?.eligible_employees ?? []} loading={scheduleLoading} />
 
           <div className="min-w-0 flex-1">
             {selectedStoreId ? (
