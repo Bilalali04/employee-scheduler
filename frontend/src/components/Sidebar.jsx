@@ -1,27 +1,11 @@
-const AVATAR_PALETTE = [
-  { bg: 'bg-rose-500/15', text: 'text-rose-300', ring: 'ring-rose-500/30' },
-  { bg: 'bg-orange-500/15', text: 'text-orange-300', ring: 'ring-orange-500/30' },
-  { bg: 'bg-lime-500/15', text: 'text-lime-300', ring: 'ring-lime-500/30' },
-  { bg: 'bg-cyan-500/15', text: 'text-cyan-300', ring: 'ring-cyan-500/30' },
-  { bg: 'bg-blue-500/15', text: 'text-blue-300', ring: 'ring-blue-500/30' },
-  { bg: 'bg-violet-500/15', text: 'text-violet-300', ring: 'ring-violet-500/30' },
-  { bg: 'bg-fuchsia-500/15', text: 'text-fuchsia-300', ring: 'ring-fuchsia-500/30' },
-  { bg: 'bg-sky-500/15', text: 'text-sky-300', ring: 'ring-sky-500/30' },
-]
-
-function getInitials(name) {
-  const parts = name.trim().split(/\s+/)
-  const first = parts[0]?.[0] ?? ''
-  const last = parts.length > 1 ? parts[parts.length - 1][0] : ''
-  return (first + last).toUpperCase()
-}
+import { AVATAR_PALETTE, getInitials } from '../colors'
 
 function EmployeeCard({ employee, colorIndex }) {
   const palette = AVATAR_PALETTE[colorIndex % AVATAR_PALETTE.length]
   const hasHours = employee.scheduled_hours > 0
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+    <div className="rounded-xl border border-slate-800 light:border-slate-200 bg-slate-900/60 light:bg-white p-3">
       <div className="flex items-start gap-3">
         <div
           className={
@@ -32,7 +16,9 @@ function EmployeeCard({ employee, colorIndex }) {
           {getInitials(employee.name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-slate-200">{employee.name}</p>
+          <p className="truncate text-sm font-medium text-slate-200 light:text-slate-800">
+            {employee.name}
+          </p>
           <p className="truncate text-xs text-slate-500">{employee.employee_id}</p>
         </div>
       </div>
@@ -42,30 +28,32 @@ function EmployeeCard({ employee, colorIndex }) {
           className={
             'rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset ' +
             (employee.employment_type === 'full_time'
-              ? 'bg-indigo-500/15 text-indigo-300 ring-indigo-500/30'
-              : 'bg-teal-500/15 text-teal-300 ring-teal-500/30')
+              ? 'bg-indigo-500/15 light:bg-indigo-50 text-indigo-300 light:text-indigo-700 ring-indigo-500/30 light:ring-indigo-200'
+              : 'bg-teal-500/15 light:bg-teal-50 text-teal-300 light:text-teal-700 ring-teal-500/30 light:ring-teal-200')
           }
         >
           {employee.employment_type === 'full_time' ? 'FT' : 'PT'}
         </span>
-        <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-400 ring-1 ring-inset ring-slate-700">
+        <span className="rounded-full bg-slate-800 light:bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-400 light:text-slate-500 ring-1 ring-inset ring-slate-700 light:ring-slate-200">
           Hourly
         </span>
       </div>
 
       <div className="mt-2.5 text-[11px] text-slate-500">
         {hasHours ? (
-          <span className="font-mono text-slate-300">{employee.scheduled_hours}h this week</span>
+          <span className="font-mono text-slate-300 light:text-slate-600">
+            {employee.scheduled_hours}h this week
+          </span>
         ) : (
-          <span className="text-slate-600">Not scheduled this week</span>
+          <span className="text-slate-600 light:text-slate-400">Not scheduled this week</span>
         )}
       </div>
 
-      <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-slate-800/60 pt-2">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-slate-600">
+      <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-slate-800/60 light:border-slate-200 pt-2">
+        <span className="text-[11px] font-medium uppercase tracking-wide text-slate-600 light:text-slate-400">
           GP/Hr
         </span>
-        <span className="shrink-0 rounded-full bg-slate-800 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+        <span className="shrink-0 rounded-full bg-slate-800 light:bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
           Soon
         </span>
       </div>
@@ -75,9 +63,9 @@ function EmployeeCard({ employee, colorIndex }) {
 
 function Sidebar({ employees, loading }) {
   return (
-    <aside className="flex w-full shrink-0 flex-col rounded-2xl border border-slate-800 bg-slate-900/40 lg:w-72">
-      <div className="border-b border-slate-800 px-5 py-4">
-        <h2 className="text-sm font-semibold text-slate-200">Employees</h2>
+    <aside className="flex w-full shrink-0 flex-col rounded-2xl border border-slate-800 light:border-slate-200 bg-slate-900/40 light:bg-white lg:w-72">
+      <div className="border-b border-slate-800 light:border-slate-200 px-5 py-4">
+        <h2 className="text-sm font-semibold text-slate-200 light:text-slate-800">Employees</h2>
         <p className="mt-0.5 text-xs text-slate-500">
           {loading ? 'Loading…' : `${employees.length} eligible for this store`}
         </p>
@@ -87,7 +75,10 @@ function Sidebar({ employees, loading }) {
         {loading ? (
           <div className="space-y-2.5">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="h-24 animate-pulse rounded-xl bg-slate-800/40" />
+              <div
+                key={index}
+                className="h-24 animate-pulse rounded-xl bg-slate-800/40 light:bg-slate-100"
+              />
             ))}
           </div>
         ) : employees.length === 0 ? (

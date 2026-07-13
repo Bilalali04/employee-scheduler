@@ -1,7 +1,16 @@
 @import "tailwindcss";
 
+/* Dark is the default (unprefixed classes). "light:" is an opt-in variant
+   applied when the toolbar's theme toggle sets data-theme="light" on <html>. */
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+
 body {
   margin: 0;
   background-color: #020617;
   color-scheme: dark;
+}
+
+html[data-theme='light'] body {
+  background-color: #f8fafc;
+  color-scheme: light;
 }

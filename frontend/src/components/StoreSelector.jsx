@@ -4,7 +4,7 @@ function StoreSelector({ stores, loading, error, selectedStoreId, onSelect }) {
   }
 
   if (error) {
-    return <p className="text-sm text-red-400">Could not load stores: {error}</p>
+    return <p className="text-sm text-red-400 light:text-red-600">Could not load stores: {error}</p>
   }
 
   if (stores.length === 0) {
@@ -16,10 +16,14 @@ function StoreSelector({ stores, loading, error, selectedStoreId, onSelect }) {
       <select
         value={selectedStoreId ?? ''}
         onChange={(event) => onSelect(event.target.value)}
-        className="appearance-none rounded-lg border border-slate-700 bg-slate-900 py-2 pl-3 pr-9 text-sm font-medium text-slate-200 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+        className="appearance-none rounded-lg border border-slate-700 light:border-slate-300 bg-slate-900 light:bg-white py-2 pl-3 pr-9 text-sm font-medium text-slate-200 light:text-slate-700 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
       >
         {stores.map((store) => (
-          <option key={store.store_id} value={store.store_id} className="bg-slate-900 text-slate-200">
+          <option
+            key={store.store_id}
+            value={store.store_id}
+            className="bg-slate-900 light:bg-white text-slate-200 light:text-slate-700"
+          >
             {store.store_id} &mdash; {store.brand}/{store.branch} ({store.size_tier})
           </option>
         ))}

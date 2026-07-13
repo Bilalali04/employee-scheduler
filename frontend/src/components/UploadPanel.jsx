@@ -32,7 +32,7 @@ function UploadPanel({ onUploadSuccess }) {
 
   return (
     <div className="flex w-full flex-wrap items-center gap-3">
-      <label className="group flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-700 bg-slate-950/60 px-3 py-2 text-sm text-slate-400 transition hover:border-indigo-500/60 hover:bg-indigo-500/5 hover:text-slate-200">
+      <label className="group flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-slate-700 light:border-slate-300 bg-slate-950/60 light:bg-slate-50 px-3 py-2 text-sm text-slate-400 light:text-slate-500 transition hover:border-indigo-500/60 hover:bg-indigo-500/5 hover:text-slate-200 light:hover:text-slate-700">
         <input type="file" accept=".xlsx" className="hidden" onChange={handleFileChange} />
         <svg
           className="h-4 w-4 shrink-0 text-slate-500 transition group-hover:text-indigo-400"
@@ -56,7 +56,7 @@ function UploadPanel({ onUploadSuccess }) {
         type="button"
         onClick={handleUpload}
         disabled={!file || status === 'uploading'}
-        className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-indigo-950/40 transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:bg-slate-800 disabled:text-slate-500 disabled:shadow-none"
+        className="rounded-lg bg-indigo-500 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-indigo-950/40 transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:bg-slate-800 light:disabled:bg-slate-200 disabled:text-slate-500 light:disabled:text-slate-400 disabled:shadow-none"
       >
         {status === 'uploading' ? (
           <span className="flex items-center gap-2">
@@ -69,7 +69,7 @@ function UploadPanel({ onUploadSuccess }) {
       </button>
 
       {status === 'success' && result && (
-        <span className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
+        <span className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 light:bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-300 light:text-emerald-700 ring-1 ring-inset ring-emerald-500/30 light:ring-emerald-200">
           <svg className="h-3.5 w-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
@@ -82,7 +82,7 @@ function UploadPanel({ onUploadSuccess }) {
       )}
 
       {status === 'error' && errorMessage && (
-        <span className="flex max-w-sm items-center gap-1.5 rounded-lg bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-300 ring-1 ring-inset ring-red-500/30">
+        <span className="flex max-w-sm items-center gap-1.5 rounded-lg bg-red-500/10 light:bg-red-50 px-3 py-1.5 text-xs font-medium text-red-300 light:text-red-700 ring-1 ring-inset ring-red-500/30 light:ring-red-200">
           <svg className="h-3.5 w-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
